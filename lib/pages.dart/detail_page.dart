@@ -1,42 +1,31 @@
-// lib/pages/detail_page.dart
 import 'package:flutter/material.dart';
-import 'package:news_app_flutter/model/rss_feed_model.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
-class DetailPage extends StatelessWidget {
-  final RssFeed feed;
+class DetailPage extends StatefulWidget {
+  final String url;
 
-  DetailPage({required this.feed});
+  const DetailPage({Key? key, required this.url}) : super(key: key);
+
+  @override
+  _DetailPageState createState() => _DetailPageState();
+}
+
+class _DetailPageState extends State<DetailPage> {
+  late final WebViewController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..loadRequest(Uri.parse(widget.url));
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(feed.title),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (feed.imageUrl != null && feed.imageUrl!.isNotEmpty)
-              Image.network(feed.imageUrl!),
-            SizedBox(height: 8),
-            Text(
-              feed.title,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Published on ${feed.pubDate}',
-              style: TextStyle(color: Colors.grey),
-            ),
-            SizedBox(height: 16),
-            Text(feed.description),
-            SizedBox(height: 16),
-            Text('Link: ${feed.link}'),
-          ],
-        ),
-      ),
+      appBar: AppBar(),
+      body: WebViewWidget(controller: _controller),
     );
   }
 }

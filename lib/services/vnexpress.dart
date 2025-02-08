@@ -1,15 +1,13 @@
 import 'package:http/http.dart' as http;
+import 'package:news_app_flutter/get_categories.dart';
 import 'package:news_app_flutter/model/rss_feed_model.dart';
 import 'package:xml/xml.dart' as xml;
 import 'package:collection/collection.dart'; // Thêm dòng này để sử dụng firstOrNull
 
 class RssService {
-  Future<List<RssFeed>> fetchRssFeeds() async {
-    final urls = [
-      'https://vneconomy.vn/tin-moi.rss',
-      'https://vnexpress.net/rss/gia-dinh.rss',
-    ];
-
+  Future<List<RssFeed>> fetchRssFeeds(String category) async {
+    ///GET URL
+    final urls = getUrls(category);
     List<RssFeed> feeds = [];
 
     for (var url in urls) {

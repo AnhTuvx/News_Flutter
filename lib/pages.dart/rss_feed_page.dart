@@ -1,5 +1,8 @@
-// lib/pages/rss_feed_page.dart
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:news_app_flutter/model/category_model.dart';
 import 'package:news_app_flutter/model/rss_feed_model.dart';
 import 'package:news_app_flutter/services/vnexpress.dart';
 import 'detail_page.dart';
@@ -11,77 +14,195 @@ class RssFeedPage extends StatefulWidget {
 
 class _RssFeedPageState extends State<RssFeedPage> {
   late Future<List<RssFeed>> futureFeeds;
+  FlutterTts flutterTts = FlutterTts();
+  List<CategoryModel> categories = [
+    CategoryModel(id: "tin_moi", name: "Tin mới"),
+    CategoryModel(id: "kinh_doanh", name: "Kinh Doanh"),
+    CategoryModel(id: "kinh_te", name: "Kinh Tế"),
+    CategoryModel(id: "kinh_doanh", name: "Kinh Doanh"),
+    CategoryModel(id: "kinh_te", name: "Kinh Tế"),
+    CategoryModel(id: "kinh_doanh", name: "Kinh Doanh"),
+    CategoryModel(id: "kinh_te", name: "Kinh Tế"),
+  ];
+  int indexSelected = 0;
 
   @override
   void initState() {
     super.initState();
-    futureFeeds = RssService().fetchRssFeeds();
+    futureFeeds = RssService().fetchRssFeeds(categories[indexSelected].id);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Tin tức Du lịch'),
-      ),
-      body: FutureBuilder<List<RssFeed>>(
-        future: futureFeeds,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('Không có dữ liệu'));
-          } else if (snapshot.hasData) {
-            return ListView.builder(
-              itemCount: snapshot.data!.length > 5
-                  ? 5
-                  : snapshot.data!.length, // Hiển thị tất cả các bài viết
-              itemBuilder: (context, index) {
-                RssFeed feed = snapshot.data![index];
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DetailPage(feed: feed),
-                      ),
-                    );
-                  },
-                  child: buildFeedItem(feed),
-                );
+    return DefaultTabController(
+      length: categories.length,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Tin tức ${categories[indexSelected].name}'),
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(kToolbarHeight),
+            child: Container(
+              color: Colors.black, // Màu nền của TabBar
+
+              child: TabBar(
+                tabs: List.generate(categories.length, (index) {
+                  return Tab(text: categories[index].name);
+                }),
+                onTap: (index) {
+                  setState(() {
+                    indexSelected = index;
+                  });
+                  futureFeeds =
+                      RssService().fetchRssFeeds(categories[indexSelected].id);
+                },
+                indicatorColor: Colors.red, // Màu gạch dưới khi tab được chọn
+                labelColor: Colors.red, // Màu chữ khi tab được chọn
+                unselectedLabelColor:
+                    Colors.white, // Màu chữ khi tab không được chọn
+                isScrollable: true,
+                labelStyle: TextStyle(fontSize: 18), // chinh kich thuoc chu
+              ),
+            ),
+          ),
+        ),
+        body: TabBarView(
+          children: List.generate(categories.length, (index) {
+            return FutureBuilder<List<RssFeed>>(
+              future: RssService().fetchRssFeeds(categories[index].id),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('Không có dữ liệu'));
+                } else {
+                  return ListView.builder(
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      RssFeed feed = snapshot.data![index];
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DetailPage(
+                                url: feed.link,
+                              ),
+                            ),
+                          );
+                        },
+                        child: buildFeedItem(feed),
+                      );
+                    },
+                  );
+                }
               },
             );
-          } else {
-            return const Center(
-              child: Text(
-                'No data available',
-                style: TextStyle(color: Colors.black),
-              ),
-            );
-          }
-        },
+          }),
+        ),
       ),
     );
   }
 
   Widget buildFeedItem(RssFeed feed) {
-    return Card(
-      margin: EdgeInsets.all(8),
-      child: ListTile(
-        leading: feed.imageUrl != null
-            ? Image.network(
-                feed.imageUrl!,
-                width: 100,
-                height: 100,
-                fit: BoxFit.cover,
-              )
-            : Icon(Icons.image,
-                size: 100), // Hiển thị icon nếu không có hình ảnh
-        title: Text(feed.title),
-        subtitle: Text('${feed.source} - ${feed.pubDate}'),
+    return Container(
+      color: Colors.black,
+      child: Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            feed.imageUrl != null
+                ? Image.network(
+                    feed.imageUrl!,
+                    width: double.infinity,
+                    height: 150,
+                    fit: BoxFit.cover,
+                  )
+                : Container(
+                    width: double.infinity,
+                    height: 200,
+                    color: Colors.grey,
+                    child: Icon(Icons.image, size: 100),
+                  ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 8),
+                  Text(
+                    feed.title,
+                    style: TextStyle(
+                      color: const Color.fromARGB(255, 255, 252, 252),
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text.rich(
+                    TextSpan(
+                      text: "Nguồn: ", // Văn bản cố định
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white, // Màu chữ cho "Nguồn: "
+                        fontWeight: FontWeight.bold, // Đậm (nếu muốn)
+                      ),
+                      children: [
+                        TextSpan(
+                          text: feed.source, // Văn bản động từ feed
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey, // Màu chữ cho feed.source
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          _speak(feed.title);
+                        },
+                        child: Icon(
+                          Icons.headphones,
+                          color: Colors.white, // Màu trắng
+                          size: 30, // Kích thước icon (có thể thay đổi)
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () {},
+                        child: Icon(
+                          Icons.save,
+                          color: Colors.white, // Màu trắng
+                          size: 30, // Kích thước icon (có thể thay đổi)
+                        ),
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Divider(
+              color: Colors.white, // Màu trắng
+              thickness: 0.5, // Độ dày
+            ),
+            SizedBox(
+              height: 5,
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  Future<void> _speak(String text) async {
+    await flutterTts.setLanguage("vi-VN"); // Thiết lập ngôn ngữ Tiếng Việt
+    await flutterTts.setSpeechRate(0.5); // Tốc độ đọc (0.0 đến 1.0)
+    await flutterTts.setVolume(1.0); // Âm lượng
+    await flutterTts.setPitch(1.0); // Cao độ giọng nói
+    await flutterTts.speak(text); // Bắt đầu đọc văn bản
   }
 }
