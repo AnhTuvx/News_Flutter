@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:news_app_flutter/model/rss_feed_model.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class DetailPage extends StatefulWidget {
   final String url;
+  final String logoUrl; // Add the logoUrl parameter
 
-  const DetailPage({Key? key, required this.url}) : super(key: key);
+  const DetailPage({
+    Key? key,
+    required this.url,
+    required this.logoUrl, // Add the logoUrl parameter
+  }) : super(key: key);
 
   @override
   _DetailPageState createState() => _DetailPageState();
@@ -12,7 +18,6 @@ class DetailPage extends StatefulWidget {
 
 class _DetailPageState extends State<DetailPage> {
   late final WebViewController _controller;
-
   @override
   void initState() {
     super.initState();
@@ -24,7 +29,14 @@ class _DetailPageState extends State<DetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Image.network(
+          widget.logoUrl,
+          width: double.infinity,
+          height: 70,
+          fit: BoxFit.cover,
+        ), // Add the logo to the AppBar
+      ),
       body: WebViewWidget(controller: _controller),
     );
   }

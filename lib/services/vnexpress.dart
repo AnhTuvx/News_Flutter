@@ -6,7 +6,6 @@ import 'package:collection/collection.dart'; // Thêm dòng này để sử dụ
 
 class RssService {
   Future<List<RssFeed>> fetchRssFeeds(String category) async {
-    ///GET URL
     final urls = getUrls(category);
     List<RssFeed> feeds = [];
 
@@ -26,6 +25,11 @@ class RssService {
           final channelTitle =
               channel.findElements('title').firstOrNull?.text ?? 'Unknown';
 
+          // Extract logo URL
+          final imageElement = channel.findElements('image').firstOrNull;
+          final logoUrl =
+              imageElement?.findElements('url').firstOrNull?.text ?? '';
+
           for (var item in channel.findElements('item')) {
             try {
               final titleElement = item.findElements('title').firstOrNull;
@@ -44,10 +48,10 @@ class RssService {
               final pubDate = pubDateElement?.text ?? '';
               final link = linkElement.text;
 
-              // Trích xuất ảnh
+              // Extract image
               String? imageUrl;
 
-              // Kiểm tra 'media:content' và 'enclosure'
+              // Check 'media:content' and 'enclosure'
               final media = item.findElements('media:content').firstOrNull;
               final enclosure = item.findElements('enclosure').firstOrNull;
 
@@ -66,6 +70,7 @@ class RssService {
                 link: link,
                 source: channelTitle,
                 imageUrl: imageUrl,
+                logoUrl: logoUrl, // Include the logo URL
               ));
             } catch (e) {
               print('Error parsing item from $url: $e');
@@ -84,7 +89,7 @@ class RssService {
     return feeds;
   }
 
-  // Trích xuất ảnh từ description bằng RegExp
+  // Extract image from description using RegExp
   String? _extractImageFromDescription(String description) {
     try {
       final RegExp regExp =

@@ -1,6 +1,6 @@
 Map<String, Map<String, String>> categories = {
   "tin_moi": {
-    "https://vtcnews.vn": "https://vtcnews.vn/rss/oto-xe-may.rss",
+    "https://vtcnews.vn": "https://vtcnews.vn/rss/thoi-su.rss",
     "https://vnexpress.net": "https://vnexpress.net/rss/tin-moi-nhat.rss",
     "https://vneconomy.vn/": "https://vneconomy.vn/tin-moi.rss",
   },

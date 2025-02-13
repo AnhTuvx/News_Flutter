@@ -1,10 +1,13 @@
+import 'package:intl/intl.dart';
+
 class RssFeed {
   final String title;
   final String description;
   final String pubDate;
   final String link;
   final String source;
-  final String? imageUrl; // Thêm trường hình ảnh
+  final String? imageUrl;
+  final String? logoUrl;
 
   RssFeed({
     required this.title,
@@ -12,6 +15,7 @@ class RssFeed {
     required this.pubDate,
     required this.link,
     required this.source,
-    this.imageUrl, // Thêm trường hình ảnh
+    this.imageUrl,
+    this.logoUrl,
   });
 }

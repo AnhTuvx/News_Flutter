@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:intl/intl.dart';
 import 'package:news_app_flutter/model/category_model.dart';
 import 'package:news_app_flutter/model/rss_feed_model.dart';
+import 'package:news_app_flutter/services/sort.dart';
 import 'package:news_app_flutter/services/vnexpress.dart';
 import 'detail_page.dart';
 
@@ -68,7 +71,7 @@ class _RssFeedPageState extends State<RssFeedPage> {
         body: TabBarView(
           children: List.generate(categories.length, (index) {
             return FutureBuilder<List<RssFeed>>(
-              future: RssService().fetchRssFeeds(categories[index].id),
+              future: futureFeeds,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
@@ -77,16 +80,19 @@ class _RssFeedPageState extends State<RssFeedPage> {
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return Center(child: Text('Không có dữ liệu'));
                 } else {
+                  // Sort the feeds before displaying
+                  List<RssFeed> sortedFeeds = sortFeedsByDate(snapshot.data!);
                   return ListView.builder(
-                    itemCount: snapshot.data!.length,
+                    itemCount: sortedFeeds.length,
                     itemBuilder: (context, index) {
-                      RssFeed feed = snapshot.data![index];
+                      RssFeed feed = sortedFeeds[index];
                       return GestureDetector(
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => DetailPage(
+                                logoUrl: feed.logoUrl!,
                                 url: feed.link,
                               ),
                             ),
@@ -116,14 +122,14 @@ class _RssFeedPageState extends State<RssFeedPage> {
                 ? Image.network(
                     feed.imageUrl!,
                     width: double.infinity,
-                    height: 150,
+                    height: 200,
                     fit: BoxFit.cover,
                   )
-                : Container(
+                : Image.asset(
+                    'lib/img/NotFound.png',
                     width: double.infinity,
-                    height: 200,
-                    color: Colors.grey,
-                    child: Icon(Icons.image, size: 100),
+                    height: 190,
+                    fit: BoxFit.cover,
                   ),
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -135,29 +141,24 @@ class _RssFeedPageState extends State<RssFeedPage> {
                     feed.title,
                     style: TextStyle(
                       color: const Color.fromARGB(255, 255, 252, 252),
-                      fontSize: 30,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 4),
-                  Text.rich(
-                    TextSpan(
-                      text: "Nguồn: ", // Văn bản cố định
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.white, // Màu chữ cho "Nguồn: "
-                        fontWeight: FontWeight.bold, // Đậm (nếu muốn)
+                  Row(
+                    children: [
+                      Image.network(
+                        feed.logoUrl!,
+                        width: 100,
+                        height: 50,
                       ),
-                      children: [
-                        TextSpan(
-                          text: feed.source, // Văn bản động từ feed
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey, // Màu chữ cho feed.source
-                          ),
+                      Text(
+                        formatDateString(feed.pubDate),
+                        style: TextStyle(
+                          color: Colors.white,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                   SizedBox(height: 10),
                   Row(
