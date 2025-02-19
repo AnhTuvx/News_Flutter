@@ -1,7 +1,6 @@
 import 'dart:async';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:intl/intl.dart';
 import 'package:news_app_flutter/model/category_model.dart';
@@ -20,12 +19,8 @@ class _RssFeedPageState extends State<RssFeedPage> {
   FlutterTts flutterTts = FlutterTts();
   List<CategoryModel> categories = [
     CategoryModel(id: "tin_moi", name: "Tin mới"),
-    CategoryModel(id: "kinh_doanh", name: "Kinh Doanh"),
     CategoryModel(id: "kinh_te", name: "Kinh Tế"),
-    CategoryModel(id: "kinh_doanh", name: "Kinh Doanh"),
-    CategoryModel(id: "kinh_te", name: "Kinh Tế"),
-    CategoryModel(id: "kinh_doanh", name: "Kinh Doanh"),
-    CategoryModel(id: "kinh_te", name: "Kinh Tế"),
+    CategoryModel(id: "thoi_su", name: "Thời sự"),
   ];
   int indexSelected = 0;
 
@@ -41,12 +36,17 @@ class _RssFeedPageState extends State<RssFeedPage> {
       length: categories.length,
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Tin tức ${categories[indexSelected].name}'),
+          backgroundColor: Colors.black,
+          title: Center(
+            child: Image.asset(
+              "lib/img/Logo2.png",
+              height: 70, // Sử dụng BoxFit.contain để hiển thị đầy đủ logo
+            ),
+          ),
           bottom: PreferredSize(
             preferredSize: Size.fromHeight(kToolbarHeight),
             child: Container(
               color: Colors.black, // Màu nền của TabBar
-
               child: TabBar(
                 tabs: List.generate(categories.length, (index) {
                   return Tab(text: categories[index].name);
@@ -63,7 +63,7 @@ class _RssFeedPageState extends State<RssFeedPage> {
                 unselectedLabelColor:
                     Colors.white, // Màu chữ khi tab không được chọn
                 isScrollable: true,
-                labelStyle: TextStyle(fontSize: 18), // chinh kich thuoc chu
+                labelStyle: TextStyle(fontSize: 18), // Chỉnh kích thước chữ
               ),
             ),
           ),
@@ -80,7 +80,7 @@ class _RssFeedPageState extends State<RssFeedPage> {
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return Center(child: Text('Không có dữ liệu'));
                 } else {
-                  // Sort the feeds before displaying
+                  // Sắp xếp các tin tức trước khi hiển thị
                   List<RssFeed> sortedFeeds = sortFeedsByDate(snapshot.data!);
                   return ListView.builder(
                     itemCount: sortedFeeds.length,
@@ -119,12 +119,7 @@ class _RssFeedPageState extends State<RssFeedPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             feed.imageUrl != null
-                ? Image.network(
-                    feed.imageUrl!,
-                    width: double.infinity,
-                    height: 200,
-                    fit: BoxFit.cover,
-                  )
+                ? CachedNetworkImage(imageUrl: feed.imageUrl!)
                 : Image.asset(
                     'lib/img/NotFound.png',
                     width: double.infinity,
@@ -147,13 +142,13 @@ class _RssFeedPageState extends State<RssFeedPage> {
                   ),
                   Row(
                     children: [
-                      Image.network(
-                        feed.logoUrl!,
+                      CachedNetworkImage(
+                        imageUrl: feed.logoUrl!,
                         width: 100,
                         height: 50,
                       ),
                       Text(
-                        formatDateString(feed.pubDate),
+                        formatHoursString(feed.pubDate),
                         style: TextStyle(
                           color: Colors.white,
                         ),

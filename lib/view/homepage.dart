@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:news_app_flutter/pages.dart/test2.dart';
+import 'package:news_app_flutter/view/Tien_ich_page.dart';
+import 'package:news_app_flutter/view/test2.dart';
 import 'rss_feed_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -13,7 +14,7 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> _pages = [
     RssFeedPage(), // Trang Home
     CaiDat(), // Trang Thông báo
-    CaiDat(), // Trang Hồ sơ
+    TienIchPage(), // Trang Hồ sơ
     CaiDat(), // Trang Cài đặt
   ];
 
@@ -26,9 +27,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_getTitle(_selectedIndex)),
-      ),
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.black,
@@ -43,16 +41,16 @@ class _HomePageState extends State<HomePage> {
             label: 'Trang Chủ',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Thông Báo',
+            icon: Icon(Icons.bookmark_add),
+            label: 'Đọc Sau',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.category),
+            label: 'Tiện Ích',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: 'Hồ Sơ',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Cài Đặt',
+            label: 'Cá Nhân',
           ),
         ],
       ),
