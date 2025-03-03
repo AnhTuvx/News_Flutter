@@ -20,6 +20,7 @@ String formatHoursString(String dateString) {
     Duration difference = now.difference(dateTime);
 
     if (difference.inMinutes < 60) {
+      
       return '${difference.inMinutes} phút trước';
     } else if (difference.inHours < 24) {
       return '${difference.inHours} giờ trước';

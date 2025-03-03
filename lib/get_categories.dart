@@ -1,13 +1,13 @@
 Map<String, Map<String, String>> categories = {
   "tin_moi": {
-    "https://vtcnews.vn": "https://vtcnews.vn/rss/thoi-su.rss",
+    // "https://vtcnews.vn": "https://vtcnews.vn/rss/thoi-su.rss",
     "https://vnexpress.net": "https://vnexpress.net/rss/tin-moi-nhat.rss",
     "https://vneconomy.vn": "https://vneconomy.vn/tin-moi.rss",
   },
   "kinh_te": {
     "https://vtcnews.vn": "https://nld.com.vn/rss/kinh-te.rss",
     "https://vnexpress.net": "https://vnexpress.net/rss/kinh-doanh.rss",
-    "https://vneconomy.vn": "https://vtcnews.vn/rss/kinh-te.rss",
+    "https://vneconomy.vn": "https://dantri.com.vn/rss/xa-hoi.rss",
   },
   "thoi_su": {
     "https://vtcnews.vn": "https://vnexpress.net/rss/thoi-su.rss",

@@ -1,12 +1,12 @@
 import 'dart:async';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:intl/intl.dart';
 import 'package:news_app_flutter/model/category_model.dart';
 import 'package:news_app_flutter/model/rss_feed_model.dart';
 import 'package:news_app_flutter/services/sort.dart';
 import 'package:news_app_flutter/services/vnexpress.dart';
+import 'package:news_app_flutter/widget/CategoryProvider.dart';
+import 'package:provider/provider.dart';
 import 'detail_page.dart';
 
 class RssFeedPage extends StatefulWidget {
@@ -17,97 +17,193 @@ class RssFeedPage extends StatefulWidget {
 class _RssFeedPageState extends State<RssFeedPage> {
   late Future<List<RssFeed>> futureFeeds;
   FlutterTts flutterTts = FlutterTts();
-  List<CategoryModel> categories = [
-    CategoryModel(id: "tin_moi", name: "Tin mới"),
-    CategoryModel(id: "kinh_te", name: "Kinh Tế"),
-    CategoryModel(id: "thoi_su", name: "Thời sự"),
-  ];
   int indexSelected = 0;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    futureFeeds = RssService().fetchRssFeeds(categories[indexSelected].id);
+    CategoryProvider categoryProvider =
+        Provider.of<CategoryProvider>(context, listen: false);
+    futureFeeds = RssService()
+        .fetchRssFeeds(categoryProvider.selectedCategories[indexSelected]);
+
+    // Ví dụ về bộ đếm thời gian
+    _timer = Timer.periodic(Duration(seconds: 5), (timer) {
+      if (mounted) {
+        setState(() {
+          // Cập nhật trạng thái
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _showCategorySelectionDialog() {
+    CategoryProvider categoryProvider =
+        Provider.of<CategoryProvider>(context, listen: false);
+    List<String> tempSelectedCategories =
+        List.from(categoryProvider.selectedCategories);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            title: Text('Chọn danh mục'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: categoryProvider.categories.map((category) {
+                  return CheckboxListTile(
+                    title: Text(category.name),
+                    value: tempSelectedCategories.contains(category.id),
+                    onChanged: (bool? value) {
+                      if (mounted) {
+                        setState(() {
+                          if (value == true) {
+                            tempSelectedCategories.add(category.id);
+                          } else {
+                            tempSelectedCategories.remove(category.id);
+                          }
+                        });
+                      }
+                    },
+                  );
+                }).toList(),
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: Text('Hủy'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: Text('Lưu'),
+                onPressed: () {
+                  if (mounted) {
+                    categoryProvider
+                        .updateSelectedCategories(tempSelectedCategories);
+                    setState(() {
+                      if (indexSelected >=
+                          categoryProvider.selectedCategories.length) {
+                        indexSelected =
+                            categoryProvider.selectedCategories.length - 1;
+                      }
+                      futureFeeds = RssService().fetchRssFeeds(
+                          categoryProvider.selectedCategories[indexSelected]);
+                    });
+                    Navigator.of(context).pop();
+                  }
+                },
+              ),
+            ],
+          );
+        });
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: categories.length,
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.black,
-          title: Center(
-            child: Image.asset(
-              "lib/img/Logo2.png",
-              height: 70, // Sử dụng BoxFit.contain để hiển thị đầy đủ logo
-            ),
-          ),
-          bottom: PreferredSize(
-            preferredSize: Size.fromHeight(kToolbarHeight),
-            child: Container(
-              color: Colors.black, // Màu nền của TabBar
-              child: TabBar(
-                tabs: List.generate(categories.length, (index) {
-                  return Tab(text: categories[index].name);
-                }),
-                onTap: (index) {
-                  setState(() {
-                    indexSelected = index;
-                  });
-                  futureFeeds =
-                      RssService().fetchRssFeeds(categories[indexSelected].id);
-                },
-                indicatorColor: Colors.red, // Màu gạch dưới khi tab được chọn
-                labelColor: Colors.red, // Màu chữ khi tab được chọn
-                unselectedLabelColor:
-                    Colors.white, // Màu chữ khi tab không được chọn
-                isScrollable: true,
-                labelStyle: TextStyle(fontSize: 18), // Chỉnh kích thước chữ
+    return Consumer<CategoryProvider>(
+      builder: (context, categoryProvider, child) {
+        return DefaultTabController(
+          length: categoryProvider.selectedCategories.length,
+          child: Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.black,
+              title: Center(
+                child: Image.asset(
+                  "lib/img/Logo2.png",
+                  height: 70,
+                ),
+              ),
+              actions: [
+                IconButton(
+                  icon: Icon(Icons.settings),
+                  onPressed: _showCategorySelectionDialog,
+                ),
+              ],
+              bottom: PreferredSize(
+                preferredSize: Size.fromHeight(kToolbarHeight),
+                child: Container(
+                  color: Colors.black,
+                  child: TabBar(
+                    tabs: categoryProvider.selectedCategories.map((categoryId) {
+                      CategoryModel? category = categoryProvider.categories
+                          .firstWhere((cat) => cat.id == categoryId,
+                              orElse: () => CategoryModel(
+                                  id: "unknown", name: "Unknown"));
+                      return Tab(text: category?.name);
+                    }).toList(),
+                    onTap: (index) {
+                      if (mounted) {
+                        setState(() {
+                          indexSelected = index;
+                          futureFeeds = RssService().fetchRssFeeds(
+                              categoryProvider
+                                  .selectedCategories[indexSelected]);
+                        });
+                      }
+                    },
+                    indicatorColor: Colors.red,
+                    labelColor: Colors.red,
+                    unselectedLabelColor: Colors.white,
+                    isScrollable: true,
+                    labelStyle: TextStyle(fontSize: 18),
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
-        body: TabBarView(
-          children: List.generate(categories.length, (index) {
-            return FutureBuilder<List<RssFeed>>(
-              future: futureFeeds,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('Không có dữ liệu'));
-                } else {
-                  // Sắp xếp các tin tức trước khi hiển thị
-                  List<RssFeed> sortedFeeds = sortFeedsByDate(snapshot.data!);
-                  return ListView.builder(
-                    itemCount: sortedFeeds.length,
-                    itemBuilder: (context, index) {
-                      RssFeed feed = sortedFeeds[index];
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DetailPage(
-                                logoUrl: feed.logoUrl!,
-                                url: feed.link,
-                              ),
-                            ),
+            body: TabBarView(
+              children: categoryProvider.selectedCategories.map((categoryId) {
+                return FutureBuilder<List<RssFeed>>(
+                  future: futureFeeds,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Center(child: Text('Không có dữ liệu'));
+                    } else {
+                      List<RssFeed> sortedFeeds =
+                          sortFeedsByDate(snapshot.data!);
+                      return ListView.builder(
+                        itemCount: sortedFeeds.length,
+                        itemBuilder: (context, index) {
+                          RssFeed feed = sortedFeeds[index];
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DetailPage(
+                                    logoUrl: feed.logoUrl!,
+                                    url: feed.link,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: buildFeedItem(feed),
                           );
                         },
-                        child: buildFeedItem(feed),
                       );
-                    },
-                  );
-                }
-              },
-            );
-          }),
-        ),
-      ),
+                    }
+                  },
+                );
+              }).toList(),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -119,7 +215,7 @@ class _RssFeedPageState extends State<RssFeedPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             feed.imageUrl != null
-                ? CachedNetworkImage(imageUrl: feed.imageUrl!)
+                ? Image.network(feed.imageUrl!)
                 : Image.asset(
                     'lib/img/NotFound.png',
                     width: double.infinity,
@@ -142,8 +238,8 @@ class _RssFeedPageState extends State<RssFeedPage> {
                   ),
                   Row(
                     children: [
-                      CachedNetworkImage(
-                        imageUrl: feed.logoUrl!,
+                      Image.network(
+                        feed.logoUrl!,
                         width: 100,
                         height: 50,
                       ),
@@ -164,16 +260,16 @@ class _RssFeedPageState extends State<RssFeedPage> {
                         },
                         child: Icon(
                           Icons.headphones,
-                          color: Colors.white, // Màu trắng
-                          size: 30, // Kích thước icon (có thể thay đổi)
+                          color: Colors.white,
+                          size: 30,
                         ),
                       ),
                       InkWell(
                         onTap: () {},
                         child: Icon(
                           Icons.save,
-                          color: Colors.white, // Màu trắng
-                          size: 30, // Kích thước icon (có thể thay đổi)
+                          color: Colors.white,
+                          size: 30,
                         ),
                       )
                     ],
@@ -182,8 +278,8 @@ class _RssFeedPageState extends State<RssFeedPage> {
               ),
             ),
             Divider(
-              color: Colors.white, // Màu trắng
-              thickness: 0.5, // Độ dày
+              color: Colors.white,
+              thickness: 0.5,
             ),
             SizedBox(
               height: 5,
@@ -195,10 +291,10 @@ class _RssFeedPageState extends State<RssFeedPage> {
   }
 
   Future<void> _speak(String text) async {
-    await flutterTts.setLanguage("vi-VN"); // Thiết lập ngôn ngữ Tiếng Việt
-    await flutterTts.setSpeechRate(0.5); // Tốc độ đọc (0.0 đến 1.0)
-    await flutterTts.setVolume(1.0); // Âm lượng
-    await flutterTts.setPitch(1.0); // Cao độ giọng nói
-    await flutterTts.speak(text); // Bắt đầu đọc văn bản
+    await flutterTts.setLanguage("vi-VN");
+    await flutterTts.setSpeechRate(0.5);
+    await flutterTts.setVolume(1.0);
+    await flutterTts.setPitch(1.0);
+    await flutterTts.speak(text);
   }
 }
