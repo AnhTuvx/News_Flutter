@@ -5,9 +5,9 @@ import 'package:news_app_flutter/model/category_model.dart';
 import 'package:news_app_flutter/model/rss_feed_model.dart';
 import 'package:news_app_flutter/services/sort.dart';
 import 'package:news_app_flutter/services/vnexpress.dart';
+import 'package:news_app_flutter/view/detail_page.dart';
 import 'package:news_app_flutter/widget/CategoryProvider.dart';
 import 'package:provider/provider.dart';
-import 'detail_page.dart';
 
 class RssFeedPage extends StatefulWidget {
   @override
@@ -19,22 +19,40 @@ class _RssFeedPageState extends State<RssFeedPage> {
   FlutterTts flutterTts = FlutterTts();
   int indexSelected = 0;
   Timer? _timer;
+  List<List<RssFeed>> cachedFeeds = [];
 
   @override
   void initState() {
     super.initState();
+    _loadInitialData();
+    _startTimer();
+  }
+
+  void _loadInitialData() {
     CategoryProvider categoryProvider =
         Provider.of<CategoryProvider>(context, listen: false);
     futureFeeds = RssService()
         .fetchRssFeeds(categoryProvider.selectedCategories[indexSelected]);
+    cachedFeeds = List.generate(
+      categoryProvider.selectedCategories.length,
+      (_) => [],
+    );
+  }
 
-    // Ví dụ về bộ đếm thời gian
-    _timer = Timer.periodic(Duration(seconds: 5), (timer) {
+  void _startTimer() {
+    _timer = Timer.periodic(Duration(seconds: 30), (timer) {
       if (mounted) {
-        setState(() {
-          // Cập nhật trạng thái
-        });
+        _refreshData();
       }
+    });
+  }
+
+  void _refreshData() async {
+    CategoryProvider categoryProvider =
+        Provider.of<CategoryProvider>(context, listen: false);
+    setState(() {
+      futureFeeds = RssService()
+          .fetchRssFeeds(categoryProvider.selectedCategories[indexSelected]);
     });
   }
 
@@ -115,6 +133,7 @@ class _RssFeedPageState extends State<RssFeedPage> {
     return Consumer<CategoryProvider>(
       builder: (context, categoryProvider, child) {
         return DefaultTabController(
+          key: ValueKey(categoryProvider.selectedCategories.length), // Thêm Key
           length: categoryProvider.selectedCategories.length,
           child: Scaffold(
             appBar: AppBar(
@@ -231,7 +250,7 @@ class _RssFeedPageState extends State<RssFeedPage> {
                   Text(
                     feed.title,
                     style: TextStyle(
-                      color: const Color.fromARGB(255, 255, 252, 252),
+                      color: Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),

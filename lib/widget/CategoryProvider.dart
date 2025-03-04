@@ -8,10 +8,16 @@ class CategoryProvider with ChangeNotifier {
     CategoryModel(id: "tin_moi", name: "Tin mới"),
     CategoryModel(id: "kinh_te", name: "Kinh Tế"),
     CategoryModel(id: "thoi_su", name: "Thời sự"),
+    CategoryModel(id: "rss_vnexpress", name: "VNExpress"),
   ];
 
   // List of selected category IDs
-  List<String> selectedCategories = ["tin_moi", "kinh_te", "thoi_su"];
+  List<String> selectedCategories = [
+    "tin_moi",
+    "kinh_te",
+    "thoi_su",
+    "rss_vnexpress"
+  ];
 
   // Constructor: Load selected categories when the provider is initialized
   CategoryProvider() {
