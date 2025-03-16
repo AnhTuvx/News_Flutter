@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:news_app_flutter/view/Tien_ich_page.dart';
 import 'package:news_app_flutter/view/test2.dart';
+import 'package:news_app_flutter/widget/drawer_menu.dart';
 import 'rss_feed_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -28,6 +29,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _pages[_selectedIndex],
+      drawer: DrawerMenuWidget(),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.black,
         currentIndex: _selectedIndex,
