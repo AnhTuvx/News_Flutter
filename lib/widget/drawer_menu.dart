@@ -10,17 +10,65 @@ class DrawerMenuWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       backgroundColor: Colors.white,
-      child: ListView.builder(
-        itemBuilder: (_, index) {
-          return CheckboxListTile(
-            title: Text(domains[index]),
-            value: context.watch<CategoryProvider>().isSelected(domains[index]),
-            onChanged: (_) {
-              context.read<CategoryProvider>().toggleDomain(domains[index]);
-            },
-          );
-        },
-        itemCount: domains.length,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Dòng chữ trên cùng
+          Padding(
+            padding: const EdgeInsets.only(left: 16, top: 16, right: 16),
+            child: Text(
+              'Chọn tin yêu thích',
+              style: TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+          ),
+          // Danh sách các mục
+          Expanded(
+            child: ListView.builder(
+              itemBuilder: (_, index) {
+                return Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.grey.shade100,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        domains[index],
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      Checkbox(
+                        value: context
+                            .watch<CategoryProvider>()
+                            .isSelected(domains[index]),
+                        onChanged: (_) {
+                          context
+                              .read<CategoryProvider>()
+                              .toggleDomain(domains[index]);
+                        },
+                        activeColor: Colors.blue,
+                      ),
+                    ],
+                  ),
+                );
+              },
+              itemCount: domains.length,
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -37,7 +37,7 @@ class _TienIchPageState extends State<TienIchPage> {
               ),
             ),
             SizedBox(height: 16.0),
-            ListLogoPage(),
+            // ListLogoPage(),
             SizedBox(height: 8.0),
             VietlottWidget(),
           ],

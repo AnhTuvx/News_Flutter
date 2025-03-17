@@ -7,9 +7,10 @@ class CategoryProvider with ChangeNotifier {
   // List of available categories
   List<CategoryModel> categories = [
     CategoryModel(id: "tin_moi", name: "Tin mới"),
-    CategoryModel(id: "kinh_te", name: "Kinh Tế"),
+    CategoryModel(id: "kinh_te", name: "Kinh tế"),
     CategoryModel(id: "thoi_su", name: "Thời sự"),
-    CategoryModel(id: "rss_vnexpress", name: "VNExpress"),
+    CategoryModel(id: "giao_duc", name: "Giáo dục"),
+    CategoryModel(id: "doi_song", name: "Đời sống"),
   ];
   List<bool> changeState = [];
   // List of selected category IDs
@@ -17,7 +18,8 @@ class CategoryProvider with ChangeNotifier {
     "tin_moi",
     "kinh_te",
     "thoi_su",
-    "rss_vnexpress"
+    "giao_duc",
+    "doi_song"
   ];
   List<String> stateDomain = [];
   // Constructor: Load selected categories when the provider is initialized
@@ -52,7 +54,8 @@ class CategoryProvider with ChangeNotifier {
   bool isSelected(String category) {
     return stateDomain.contains(category);
   }
-  void toggleDomain(String category){
+
+  void toggleDomain(String category) {
     if (stateDomain.contains(category)) {
       stateDomain.remove(category);
     } else {

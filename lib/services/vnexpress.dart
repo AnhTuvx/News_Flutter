@@ -2,11 +2,12 @@ import 'package:http/http.dart' as http;
 import 'package:news_app_flutter/get_categories.dart';
 import 'package:news_app_flutter/model/rss_feed_model.dart';
 import 'package:xml/xml.dart' as xml;
-import 'package:collection/collection.dart'; // Thêm dòng này để sử dụng firstOrNull
+import 'package:collection/collection.dart'; // For firstOrNull
 
 class RssService {
-  Future<List<RssFeed>> fetchRssFeeds(String category,{List<String> urlsFilter = const []}) async {
-    final urls = getUrls(category,urlFilter: urlsFilter);
+  Future<List<RssFeed>> fetchRssFeeds(String category,
+      {List<String> urlsFilter = const []}) async {
+    final urls = getUrls(category, urlFilter: urlsFilter);
     List<RssFeed> feeds = [];
 
     for (var url in urls) {
@@ -25,7 +26,7 @@ class RssService {
           final channelTitle =
               channel.findElements('title').firstOrNull?.text ?? 'Unknown';
 
-          // Extract logo URL
+          // Extract the logo URL
           final imageElement = channel.findElements('image').firstOrNull;
           final logoUrl =
               imageElement?.findElements('url').firstOrNull?.text ?? '';
@@ -43,15 +44,15 @@ class RssService {
                 continue;
               }
 
-              final title = titleElement.text;
-              final description = descriptionElement?.text ?? '';
-              final pubDate = pubDateElement?.text ?? '';
-              final link = linkElement.text;
+              final title = titleElement.text.trim();
+              final description = descriptionElement?.text.trim() ?? '';
+              final pubDate = pubDateElement?.text.trim() ?? '';
+              final link = linkElement.text.trim();
 
               // Extract image
               String? imageUrl;
 
-              // Check 'media:content' and 'enclosure'
+              // Check 'media:content', 'enclosure', or fallback to description
               final media = item.findElements('media:content').firstOrNull;
               final enclosure = item.findElements('enclosure').firstOrNull;
 
@@ -70,7 +71,7 @@ class RssService {
                 link: link,
                 source: channelTitle,
                 imageUrl: imageUrl,
-                logoUrl: logoUrl, // Include the logo URL
+                logoUrl: logoUrl,
               ));
             } catch (e) {
               print('Error parsing item from $url: $e');

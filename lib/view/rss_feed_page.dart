@@ -42,7 +42,7 @@ class _RssFeedPageState extends State<RssFeedPage> {
   }
 
   void _startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 30), (timer) {
+    _timer = Timer.periodic(Duration(seconds: 3000), (timer) {
       if (mounted) {
         _refreshData();
       }
@@ -75,37 +75,83 @@ class _RssFeedPageState extends State<RssFeedPage> {
       builder: (context) {
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
-            title: Text('Chọn danh mục'),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15), // Rounded corners
+            ),
+            title: Center(
+              child: Text(
+                'Chọn danh mục',
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
             content: SingleChildScrollView(
-              child: ListBody(
+              child: Column(
                 children: categoryProvider.categories.map((category) {
-                  return CheckboxListTile(
-                    title: Text(category.name),
-                    value: tempSelectedCategories.contains(category.id),
-                    onChanged: (bool? value) {
-                      if (mounted) {
-                        setState(() {
-                          if (value == true) {
-                            tempSelectedCategories.add(category.id);
-                          } else {
-                            tempSelectedCategories.remove(category.id);
-                          }
-                        });
-                      }
-                    },
+                  return Card(
+                    margin: EdgeInsets.symmetric(vertical: 5),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: CheckboxListTile(
+                      contentPadding: EdgeInsets.symmetric(horizontal: 15),
+                      title: Text(
+                        category.name,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      activeColor: Colors.blueAccent,
+                      value: tempSelectedCategories.contains(category.id),
+                      onChanged: (bool? value) {
+                        if (mounted) {
+                          setState(() {
+                            if (value == true) {
+                              tempSelectedCategories.add(category.id);
+                            } else {
+                              tempSelectedCategories.remove(category.id);
+                            }
+                          });
+                        }
+                      },
+                    ),
                   );
                 }).toList(),
               ),
             ),
             actions: <Widget>[
               TextButton(
-                child: Text('Hủy'),
+                child: Text(
+                  'Hủy',
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
               ),
-              TextButton(
-                child: Text('Lưu'),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueAccent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: Text(
+                  'Lưu',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 onPressed: () {
                   if (mounted) {
                     categoryProvider
@@ -147,7 +193,10 @@ class _RssFeedPageState extends State<RssFeedPage> {
               backgroundColor: Colors.black,
               leading: Builder(
                 builder: (context) => IconButton(
-                  icon: Icon(Icons.menu_rounded,color: Colors.red,),
+                  icon: Icon(
+                    Icons.menu_rounded,
+                    color: Colors.red,
+                  ),
                   onPressed: () {
                     Scaffold.of(context).openDrawer();
                   },
@@ -162,6 +211,7 @@ class _RssFeedPageState extends State<RssFeedPage> {
               actions: [
                 IconButton(
                   icon: Icon(Icons.settings),
+                  color: Colors.red,
                   onPressed: _showCategorySelectionDialog,
                 ),
               ],
