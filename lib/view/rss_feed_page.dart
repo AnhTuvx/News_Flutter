@@ -149,7 +149,6 @@ class _RssFeedPageState extends State<RssFeedPage> {
                 builder: (context) => IconButton(
                   icon: Icon(Icons.menu_rounded,color: Colors.red,),
                   onPressed: () {
-                    print('123');
                     Scaffold.of(context).openDrawer();
                   },
                 ),
