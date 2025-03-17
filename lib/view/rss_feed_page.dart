@@ -8,6 +8,7 @@ import 'package:news_app_flutter/services/sort.dart';
 import 'package:news_app_flutter/services/vnexpress.dart';
 import 'package:news_app_flutter/view/detail_page.dart';
 import 'package:news_app_flutter/widget/CategoryProvider.dart';
+import 'package:news_app_flutter/widget/drawer_menu.dart';
 import 'package:provider/provider.dart';
 
 class RssFeedPage extends StatefulWidget {
@@ -141,12 +142,15 @@ class _RssFeedPageState extends State<RssFeedPage> {
           key: ValueKey(categoryProvider.selectedCategories.length), // Thêm Key
           length: categoryProvider.selectedCategories.length,
           child: Scaffold(
+            drawer: DrawerMenuWidget(),
             appBar: AppBar(
               backgroundColor: Colors.black,
               leading: Builder(
                 builder: (context) => IconButton(
                   icon: Icon(Icons.menu_rounded,color: Colors.red,),
-                  onPressed: () => Scaffold.of(context).openDrawer(),
+                  onPressed: () {
+                    Scaffold.of(context).openDrawer();
+                  },
                 ),
               ),
               title: Center(
