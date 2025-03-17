@@ -5,8 +5,8 @@ import 'package:xml/xml.dart' as xml;
 import 'package:collection/collection.dart'; // Thêm dòng này để sử dụng firstOrNull
 
 class RssService {
-  Future<List<RssFeed>> fetchRssFeeds(String category) async {
-    final urls = getUrls(category);
+  Future<List<RssFeed>> fetchRssFeeds(String category,{List<String> urlsFilter = const []}) async {
+    final urls = getUrls(category,urlFilter: urlsFilter);
     List<RssFeed> feeds = [];
 
     for (var url in urls) {

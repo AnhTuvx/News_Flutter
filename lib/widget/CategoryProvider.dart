@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:news_app_flutter/get_categories.dart';
 import 'package:news_app_flutter/model/category_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -10,7 +11,7 @@ class CategoryProvider with ChangeNotifier {
     CategoryModel(id: "thoi_su", name: "Thời sự"),
     CategoryModel(id: "rss_vnexpress", name: "VNExpress"),
   ];
-
+  List<bool> changeState = [];
   // List of selected category IDs
   List<String> selectedCategories = [
     "tin_moi",
@@ -18,7 +19,7 @@ class CategoryProvider with ChangeNotifier {
     "thoi_su",
     "rss_vnexpress"
   ];
-
+  List<String> stateDomain = [];
   // Constructor: Load selected categories when the provider is initialized
   CategoryProvider() {
     _loadSelectedCategories();
@@ -46,5 +47,17 @@ class CategoryProvider with ChangeNotifier {
     // Save the updated list to SharedPreferences
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setStringList('selectedCategories', selectedCategories);
+  }
+
+  bool isSelected(String category) {
+    return stateDomain.contains(category);
+  }
+  void toggleDomain(String category){
+    if (stateDomain.contains(category)) {
+      stateDomain.remove(category);
+    } else {
+      stateDomain.add(category);
+    }
+    notifyListeners();
   }
 }

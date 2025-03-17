@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:news_app_flutter/get_categories.dart';
 import 'package:news_app_flutter/model/category_model.dart';
 import 'package:news_app_flutter/model/rss_feed_model.dart';
 import 'package:news_app_flutter/services/sort.dart';
@@ -114,6 +115,7 @@ class _RssFeedPageState extends State<RssFeedPage> {
                         indexSelected =
                             categoryProvider.selectedCategories.length - 1;
                       }
+
                       futureFeeds = RssService().fetchRssFeeds(
                           categoryProvider.selectedCategories[indexSelected]);
                     });
@@ -132,12 +134,21 @@ class _RssFeedPageState extends State<RssFeedPage> {
   Widget build(BuildContext context) {
     return Consumer<CategoryProvider>(
       builder: (context, categoryProvider, child) {
+        futureFeeds = RssService().fetchRssFeeds(
+            categoryProvider.selectedCategories[indexSelected],
+            urlsFilter: categoryProvider.stateDomain);
         return DefaultTabController(
           key: ValueKey(categoryProvider.selectedCategories.length), // Thêm Key
           length: categoryProvider.selectedCategories.length,
           child: Scaffold(
             appBar: AppBar(
               backgroundColor: Colors.black,
+              leading: Builder(
+                builder: (context) => IconButton(
+                  icon: Icon(Icons.menu_rounded,color: Colors.red,),
+                  onPressed: () => Scaffold.of(context).openDrawer(),
+                ),
+              ),
               title: Center(
                 child: Image.asset(
                   "lib/img/Logo2.png",
@@ -160,7 +171,7 @@ class _RssFeedPageState extends State<RssFeedPage> {
                           .firstWhere((cat) => cat.id == categoryId,
                               orElse: () => CategoryModel(
                                   id: "unknown", name: "Unknown"));
-                      return Tab(text: category?.name);
+                      return Tab(text: category.name);
                     }).toList(),
                     onTap: (index) {
                       if (mounted) {
