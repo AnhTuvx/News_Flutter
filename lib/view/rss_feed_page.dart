@@ -256,7 +256,9 @@ class _RssFeedPageState extends State<RssFeedPage> {
                     } else if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Center(child: Text('Không có dữ liệu'));
+                      return Center(
+                          child:
+                              Text('Không có tin tức cho loại báo bạn chọn'));
                     } else {
                       List<RssFeed> sortedFeeds =
                           sortFeedsByDate(snapshot.data!);

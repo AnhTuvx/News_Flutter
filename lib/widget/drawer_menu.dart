@@ -14,17 +14,19 @@ class DrawerMenuWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Dòng chữ trên cùng
-          Padding(
+          const Padding(
             padding: const EdgeInsets.only(left: 16, top: 16, right: 16),
             child: Text(
-              'Chọn tin yêu thích',
+              'Quản lí tin yêu thích',
               style: TextStyle(
                 fontSize: 30,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: Colors.red,
               ),
             ),
           ),
+
+          Image.asset("lib/img/Developeractivity-bro.png"),
           // Danh sách các mục
           Expanded(
             child: ListView.builder(
