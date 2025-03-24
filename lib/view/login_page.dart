@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:news_app_flutter/view/homepage.dart';
+import 'package:news_app_flutter/view/home_page.dart';
 import 'package:news_app_flutter/view/password_fogot.dart';
 import 'package:news_app_flutter/view/sign_up_page.dart';
 import '../Services/authentication.dart';
@@ -31,15 +31,18 @@ class _SignupScreenState extends State<LoginScreen> {
     setState(() {
       isLoading = true;
     });
-    // signup user using our authmethod
-    String res = await AuthMethod().loginUser(
-        email: emailController.text, password: passwordController.text);
 
+    // Gọi phương thức xác thực từ AuthMethod
+    String res = await AuthMethod().loginUser(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim());
+
+    // Xử lý kết quả xác thực
     if (res == "success") {
       setState(() {
         isLoading = false;
       });
-      //navigate to the home screen
+      // Chuyển đến màn hình chính
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) => HomePage(),
@@ -49,8 +52,17 @@ class _SignupScreenState extends State<LoginScreen> {
       setState(() {
         isLoading = false;
       });
-      // show error
-      showSnackBar(context, res);
+      // Hiển thị thông báo lỗi khi đăng nhập thất bại
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Tài khoản hoặc mật khẩu của bạn không đúng!',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 3),
+        ),
+      );
     }
   }
 

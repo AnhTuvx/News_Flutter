@@ -1,15 +1,16 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:news_app_flutter/get_categories.dart';
 import 'package:news_app_flutter/model/category_model.dart';
 import 'package:news_app_flutter/model/rss_feed_model.dart';
 import 'package:news_app_flutter/services/sort.dart';
-import 'package:news_app_flutter/services/vnexpress.dart';
+import 'package:news_app_flutter/services/Rss_Home_Service.dart';
 import 'package:news_app_flutter/view/detail_page.dart';
 import 'package:news_app_flutter/widget/CategoryProvider.dart';
 import 'package:news_app_flutter/widget/drawer_menu.dart';
 import 'package:provider/provider.dart';
+
+import '../widget/Bookmark/BookmarkProvider.dart';
 
 class RssFeedPage extends StatefulWidget {
   @override
@@ -182,10 +183,12 @@ class _RssFeedPageState extends State<RssFeedPage> {
     return Consumer<CategoryProvider>(
       builder: (context, categoryProvider, child) {
         futureFeeds = RssService().fetchRssFeeds(
-            categoryProvider.selectedCategories[indexSelected],
-            urlsFilter: categoryProvider.stateDomain);
+          categoryProvider.selectedCategories[indexSelected],
+          urlsFilter: categoryProvider.stateDomain,
+        );
         return DefaultTabController(
-          key: ValueKey(categoryProvider.selectedCategories.length), // Thêm Key
+          key: ValueKey(categoryProvider.selectedCategories
+              .length), // Sử dụng Key để cập nhật TabController
           length: categoryProvider.selectedCategories.length,
           child: Scaffold(
             drawer: DrawerMenuWidget(),
@@ -193,7 +196,7 @@ class _RssFeedPageState extends State<RssFeedPage> {
               backgroundColor: Colors.black,
               leading: Builder(
                 builder: (context) => IconButton(
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.menu_rounded,
                     color: Colors.red,
                   ),
@@ -210,21 +213,23 @@ class _RssFeedPageState extends State<RssFeedPage> {
               ),
               actions: [
                 IconButton(
-                  icon: Icon(Icons.settings),
+                  icon: const Icon(Icons.settings),
                   color: Colors.red,
                   onPressed: _showCategorySelectionDialog,
                 ),
               ],
               bottom: PreferredSize(
-                preferredSize: Size.fromHeight(kToolbarHeight),
+                preferredSize: const Size.fromHeight(kToolbarHeight),
                 child: Container(
                   color: Colors.black,
                   child: TabBar(
                     tabs: categoryProvider.selectedCategories.map((categoryId) {
-                      CategoryModel? category = categoryProvider.categories
-                          .firstWhere((cat) => cat.id == categoryId,
-                              orElse: () => CategoryModel(
-                                  id: "unknown", name: "Unknown"));
+                      CategoryModel? category =
+                          categoryProvider.categories.firstWhere(
+                        (cat) => cat.id == categoryId,
+                        orElse: () =>
+                            CategoryModel(id: "unknown", name: "Unknown"),
+                      );
                       return Tab(text: category.name);
                     }).toList(),
                     onTap: (index) {
@@ -232,8 +237,8 @@ class _RssFeedPageState extends State<RssFeedPage> {
                         setState(() {
                           indexSelected = index;
                           futureFeeds = RssService().fetchRssFeeds(
-                              categoryProvider
-                                  .selectedCategories[indexSelected]);
+                            categoryProvider.selectedCategories[indexSelected],
+                          );
                         });
                       }
                     },
@@ -241,7 +246,7 @@ class _RssFeedPageState extends State<RssFeedPage> {
                     labelColor: Colors.red,
                     unselectedLabelColor: Colors.white,
                     isScrollable: true,
-                    labelStyle: TextStyle(fontSize: 18),
+                    labelStyle: const TextStyle(fontSize: 18),
                   ),
                 ),
               ),
@@ -252,13 +257,13 @@ class _RssFeedPageState extends State<RssFeedPage> {
                   future: futureFeeds,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
+                      return const Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Center(
-                          child:
-                              Text('Không có tin tức cho loại báo bạn chọn'));
+                      return const Center(
+                        child: Text('Không có tin tức cho loại báo bạn chọn'),
+                      );
                     } else {
                       List<RssFeed> sortedFeeds =
                           sortFeedsByDate(snapshot.data!);
@@ -294,85 +299,100 @@ class _RssFeedPageState extends State<RssFeedPage> {
   }
 
   Widget buildFeedItem(RssFeed feed) {
-    return Container(
-      color: Colors.black,
-      child: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            feed.imageUrl != null
-                ? Image.network(feed.imageUrl!)
-                : Image.asset(
-                    'lib/img/NotFound.png',
-                    width: double.infinity,
-                    height: 190,
-                    fit: BoxFit.cover,
-                  ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 8),
-                  Text(
-                    feed.title,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+    return Consumer<BookmarkProvider>(
+      builder: (context, bookmarkProvider, child) {
+        bool isBookmarked = bookmarkProvider
+            .isBookmarked(feed.link); // Kiểm tra trạng thái bookmar
+        return Container(
+          color: Colors.black,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              feed.imageUrl != null
+                  ? Image.network(
+                      feed.imageUrl!,
+                      width: double.infinity,
+                      height: 190,
+                      fit: BoxFit.cover,
+                    )
+                  : Image.asset(
+                      'lib/img/NotFound.png',
+                      width: double.infinity,
+                      height: 190,
+                      fit: BoxFit.cover,
                     ),
-                  ),
-                  Row(
-                    children: [
-                      Image.network(
-                        feed.logoUrl!,
-                        width: 100,
-                        height: 50,
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 8),
+                    Text(
+                      feed.title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
-                      Text(
-                        formatHoursString(feed.pubDate),
-                        style: TextStyle(
-                          color: Colors.white,
+                    ),
+                    Row(
+                      children: [
+                        Image.network(
+                          feed.logoUrl!,
+                          width: 100,
+                          height: 50,
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                  Row(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          _speak(feed.title);
-                        },
-                        child: Icon(
-                          Icons.headphones,
-                          color: Colors.white,
-                          size: 30,
+                        Text(
+                          formatHoursString(feed.pubDate),
+                          style: const TextStyle(
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
-                      InkWell(
-                        onTap: () {},
-                        child: Icon(
-                          Icons.save,
-                          color: Colors.white,
-                          size: 30,
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            _speak(feed.title);
+                          },
+                          child: const Icon(
+                            Icons.headphones,
+                            color: Colors.white,
+                            size: 30,
+                          ),
                         ),
-                      )
-                    ],
-                  ),
-                ],
+                        InkWell(
+                          onTap: () {
+                            bookmarkProvider
+                                .toggleBookmark(feed); // Thêm hoặc xóa bookmark
+                          },
+                          child: Icon(
+                            isBookmarked
+                                ? Icons.bookmark
+                                : Icons
+                                    .bookmark_border, // Hiển thị icon dựa vào trạng thái
+                            color: Colors.white,
+                            size: 30,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Divider(
-              color: Colors.white,
-              thickness: 0.5,
-            ),
-            SizedBox(
-              height: 5,
-            ),
-          ],
-        ),
-      ),
+              const Divider(
+                color: Colors.white,
+                thickness: 0.5,
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 

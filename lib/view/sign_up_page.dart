@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:news_app_flutter/view/homepage.dart';
+import 'package:news_app_flutter/view/home_page.dart';
 import '../Services/authentication.dart';
 import '../Widget/snackbar.dart';
 import '../Widget/text_field.dart';

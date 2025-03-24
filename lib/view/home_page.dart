@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:news_app_flutter/view/Book_mark_page.dart';
 import 'package:news_app_flutter/view/Tien_ich_page.dart';
-import 'package:news_app_flutter/view/test2.dart';
-import 'package:news_app_flutter/widget/drawer_menu.dart';
+import 'package:news_app_flutter/view/Person_page.dart';
 import 'rss_feed_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -14,7 +14,7 @@ class _HomePageState extends State<HomePage> {
 
   final List<Widget> _pages = [
     RssFeedPage(), // Trang Home
-    CaiDat(), // Trang Thông báo
+    BookMarkPage(), // Trang Thông báo
     TienIchPage(), // Trang Hồ sơ
     CaiDat(), // Trang Cài đặt
   ];

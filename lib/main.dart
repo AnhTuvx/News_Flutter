@@ -1,8 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:news_app_flutter/view/homepage.dart';
+import 'package:news_app_flutter/view/home_page.dart';
 import 'package:news_app_flutter/view/login_page.dart';
+import 'package:news_app_flutter/widget/Bookmark/BookmarkProvider.dart';
 import 'package:news_app_flutter/widget/CategoryProvider.dart';
 import 'package:provider/provider.dart';
 
@@ -14,6 +15,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => CategoryProvider()),
+        ChangeNotifierProvider(create: (_) => BookmarkProvider()),
       ],
       child: MyApp(),
     ),

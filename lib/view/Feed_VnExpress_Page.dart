@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:news_app_flutter/model/category_model.dart';
 import 'package:news_app_flutter/model/rss_feed_model.dart';
 import 'package:news_app_flutter/services/sort.dart';
-import 'package:news_app_flutter/services/vnexpress.dart';
+import 'package:news_app_flutter/services/Rss_Home_Service.dart';
 import 'detail_page.dart';
 
 class VnExpressPage extends StatefulWidget {
