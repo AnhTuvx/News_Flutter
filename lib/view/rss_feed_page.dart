@@ -10,7 +10,7 @@ import 'package:news_app_flutter/widget/CategoryProvider.dart';
 import 'package:news_app_flutter/widget/drawer_menu.dart';
 import 'package:provider/provider.dart';
 
-import '../widget/Bookmark/BookmarkProvider.dart';
+import '../widget/Bookmark_widget/BookmarkProvider.dart';
 
 class RssFeedPage extends StatefulWidget {
   @override

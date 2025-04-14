@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:news_app_flutter/widget/List_logo_page.dart';
 import 'package:news_app_flutter/widget/Vietlott_KQXS_page.dart';
 
 class TienIchPage extends StatefulWidget {

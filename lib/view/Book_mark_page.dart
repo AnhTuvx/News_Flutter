@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:news_app_flutter/widget/Bookmark/BookmarkProvider.dart';
+import 'package:news_app_flutter/widget/Bookmark_widget/BookmarkProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:news_app_flutter/view/detail_page.dart';
 
@@ -16,6 +16,9 @@ class _BookMarkPageState extends State<BookMarkPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black,
+        iconTheme: IconThemeData(
+          color: Colors.white, // Nút Back màu trắng
+        ),
         title: Center(
           child: Image.asset(
             "lib/img/Logo2.png",
@@ -72,8 +75,12 @@ class _BookMarkPageState extends State<BookMarkPage> {
                                       height: 80,
                                       fit: BoxFit.cover,
                                     )
-                                  : const Icon(Icons.article,
-                                      color: Colors.black),
+                                  : Image.asset(
+                                      "lib/img/erorr.png",
+                                      width: 80,
+                                      height: 80,
+                                      fit: BoxFit.cover,
+                                    ),
                               title: Text(
                                 feed.title,
                                 style: const TextStyle(

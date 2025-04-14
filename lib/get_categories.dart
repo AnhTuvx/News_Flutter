@@ -3,7 +3,6 @@ Map<String, Map<String, String>> categories = {
     "NLD": "https://nld.com.vn/rss/home.rss",
     "VnExpress": "https://vnexpress.net/rss/tin-moi-nhat.rss",
     "BaoGiaoThong": "https://www.baogiaothong.vn/rss/home.rss",
-    "VnEconomy": "https://vneconomy.vn/tin-moi.rss",
   },
   "kinh_te": {
     "NLD": "https://nld.com.vn/rss/kinh-te.rss",

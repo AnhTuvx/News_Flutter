@@ -3,9 +3,8 @@ import 'package:news_app_flutter/view/home_page.dart';
 import 'package:news_app_flutter/view/password_fogot.dart';
 import 'package:news_app_flutter/view/sign_up_page.dart';
 import '../Services/authentication.dart';
-import '../Widget/snackbar.dart';
-import '../Widget/text_field.dart';
-import '../widget/button.dart';
+import '../widget/UI_widget/button.dart';
+import '../widget/UI_widget/text_field.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

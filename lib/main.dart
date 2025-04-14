@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:news_app_flutter/view/home_page.dart';
 import 'package:news_app_flutter/view/login_page.dart';
-import 'package:news_app_flutter/widget/Bookmark/BookmarkProvider.dart';
+import 'package:news_app_flutter/widget/Bookmark_widget/BookmarkProvider.dart';
 import 'package:news_app_flutter/widget/CategoryProvider.dart';
 import 'package:provider/provider.dart';
 

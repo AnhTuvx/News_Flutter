@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:news_app_flutter/view/home_page.dart';
+import 'package:news_app_flutter/widget/UI_widget/text_field.dart';
 import '../Services/authentication.dart';
-import '../Widget/snackbar.dart';
-import '../Widget/text_field.dart';
-import '../widget/button.dart';
+import '../widget/UI_widget/button.dart';
+import '../widget/UI_widget/snackbar.dart';
 import 'login_page.dart';
 
 class SignupScreen extends StatefulWidget {

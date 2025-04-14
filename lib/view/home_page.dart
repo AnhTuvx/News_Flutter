@@ -16,7 +16,7 @@ class _HomePageState extends State<HomePage> {
     RssFeedPage(), // Trang Home
     BookMarkPage(), // Trang Thông báo
     TienIchPage(), // Trang Hồ sơ
-    CaiDat(), // Trang Cài đặt
+    UserProfilePage(), // Trang Cài đặt
   ];
 
   void _onItemTapped(int index) {
