@@ -74,26 +74,26 @@ class _SignupScreenState extends State<SignupScreen> {
             TextFieldInput(
                 icon: Icons.person,
                 textEditingController: nameController,
-                hintText: 'Enter your name',
+                hintText: 'Nhập tên của bạn',
                 textInputType: TextInputType.text),
             TextFieldInput(
                 icon: Icons.email,
                 textEditingController: emailController,
-                hintText: 'Enter your email',
+                hintText: 'Nhập email của bạn',
                 textInputType: TextInputType.text),
             TextFieldInput(
               icon: Icons.lock,
               textEditingController: passwordController,
-              hintText: 'Enter your passord',
+              hintText: 'Nhập mật khẩu của bạn',
               textInputType: TextInputType.text,
               isPass: true,
             ),
-            MyButtons(onTap: signupUser, text: "Sign Up"),
+            MyButtons(onTap: signupUser, text: "Đăng ký"),
             const SizedBox(height: 50),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text("Already have an account?"),
+                const Text("Bạn đã có tài khoản?"),
                 GestureDetector(
                   onTap: () {
                     Navigator.of(context).push(
@@ -103,7 +103,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     );
                   },
                   child: const Text(
-                    " Login",
+                    " Đăng nhập",
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 )

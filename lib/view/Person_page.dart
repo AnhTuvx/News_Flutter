@@ -234,14 +234,10 @@ class _UserProfilePageState extends State<UserProfilePage> {
             // Profile Section
             Row(
               children: [
-                CircleAvatar(
+                const CircleAvatar(
                   radius: 40,
-                  backgroundColor: Colors.grey[700],
-                  child: Icon(
-                    Icons.person,
-                    size: 40,
-                    color: Colors.white,
-                  ),
+                  backgroundImage: AssetImage(
+                      'lib/img/Learning-cuate.png'), // Đường dẫn ảnh trong thư mục assets
                 ),
                 SizedBox(width: 16),
                 Column(
@@ -251,14 +247,14 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       name, // Hiển thị name từ Firestore
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 18,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     SizedBox(height: 8),
                     Text(
                       email, // Hiển thị email từ Firestore
-                      style: TextStyle(color: Colors.grey[400]),
+                      style: TextStyle(color: Colors.grey[400], fontSize: 18),
                     ),
                   ],
                 ),
@@ -275,7 +271,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
             // Menu Options
             buildMenuItem(
               icon: Icons.add_to_photos_outlined,
-              text: "Danh sách tin yêu thích",
+              text: "Danh sách tin đọc sau",
               onTap: () {
                 Navigator.push(
                   context,

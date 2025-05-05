@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:news_app_flutter/view/Book_mark_page.dart';
-import 'package:news_app_flutter/view/Tien_ich_page.dart';
+import 'package:news_app_flutter/view/utilities_page.dart';
 import 'package:news_app_flutter/view/Person_page.dart';
 import 'rss_feed_page.dart';
 

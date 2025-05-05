@@ -84,25 +84,25 @@ class _SignupScreenState extends State<LoginScreen> {
             TextFieldInput(
                 icon: Icons.person,
                 textEditingController: emailController,
-                hintText: 'Enter your email',
+                hintText: 'Nhập email của bạn',
                 textInputType: TextInputType.text),
             TextFieldInput(
               icon: Icons.lock,
               textEditingController: passwordController,
-              hintText: 'Enter your passord',
+              hintText: 'Nhập mật khẩu của bạn',
               textInputType: TextInputType.text,
               isPass: true,
             ),
             //  we call our forgot password below the login in button
             const ForgotPassword(),
-            MyButtons(onTap: loginUser, text: "Log In"),
+            MyButtons(onTap: loginUser, text: "Đăng nhập"),
 
             Row(
               children: [
                 Expanded(
                   child: Container(height: 1, color: Colors.black26),
                 ),
-                const Text("  or  "),
+                const Text("  hoặc  "),
                 Expanded(
                   child: Container(height: 1, color: Colors.black26),
                 )
@@ -117,7 +117,7 @@ class _SignupScreenState extends State<LoginScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Don't have an account? "),
+                  const Text("Bạn chưa có tài khoản? "),
                   GestureDetector(
                     onTap: () {
                       Navigator.of(context).push(
@@ -127,7 +127,7 @@ class _SignupScreenState extends State<LoginScreen> {
                       );
                     },
                     child: const Text(
-                      "SignUp",
+                      "Đăng ký",
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   )

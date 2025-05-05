@@ -24,7 +24,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             myDialogBox(context);
           },
           child: const Text(
-            "Forgot Password?",
+            "Quên Mật Khẩu?",
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,
@@ -58,7 +58,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     children: [
                       Container(),
                       const Text(
-                        "Forgot Your Password",
+                        "Quên mật khẩu",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
@@ -77,7 +77,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     controller: emailController,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: "Enter the Email",
+                      labelText: "Nhập vào gmail của bạn",
                       hintText: "eg abc@gmail.com",
                     ),
                   ),
@@ -91,7 +91,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           .then((value) {
                         // if success then show this message
                         showSnackBar(context,
-                            "We have send you the reset password link to your email id, Please check it");
+                            "Chúng tôi đã gửi cho bạn liên kết đặt lại mật khẩu tới email của bạn, vui lòng kiểm tra");
                       }).onError((error, stackTrace) {
                         // if unsuccess then show error message
                         showSnackBar(context, error.toString());
@@ -105,7 +105,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     // if we remember the password then we can easily login
                     // if we forget the password then we apply this method
                     child: const Text(
-                      "Send",
+                      "Gửi",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,

@@ -96,8 +96,11 @@ class _BookMarkPageState extends State<BookMarkPage> {
                                 style: const TextStyle(color: Colors.black),
                               ),
                               trailing: IconButton(
-                                icon:
-                                    const Icon(Icons.delete, color: Colors.red),
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                  size: 30,
+                                ),
                                 onPressed: () {
                                   bookmarkProvider
                                       .toggleBookmark(feed); // Xóa bookmark

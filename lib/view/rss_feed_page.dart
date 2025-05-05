@@ -261,8 +261,17 @@ class _RssFeedPageState extends State<RssFeedPage> {
                     } else if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Center(
-                        child: Text('Không có tin tức cho loại báo bạn chọn'),
+                      return Container(
+                        color: Colors.black,
+                        child: const Center(
+                          child: Text(
+                            'Không có tin tức cho loại báo bạn chọn',
+                            style: TextStyle(
+                              color: Colors.white, // Đặt màu chữ thành trắng
+                              fontSize: 16, // Tùy chỉnh kích thước chữ nếu cần
+                            ),
+                          ),
+                        ),
                       );
                     } else {
                       List<RssFeed> sortedFeeds =
@@ -316,7 +325,7 @@ class _RssFeedPageState extends State<RssFeedPage> {
                       fit: BoxFit.cover,
                     )
                   : Image.asset(
-                      'lib/img/NotFound.png',
+                      'lib/img/erorr.png',
                       width: double.infinity,
                       height: 190,
                       fit: BoxFit.cover,
@@ -336,6 +345,7 @@ class _RssFeedPageState extends State<RssFeedPage> {
                       ),
                     ),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Image.network(
                           feed.logoUrl!,
@@ -348,11 +358,9 @@ class _RssFeedPageState extends State<RssFeedPage> {
                             color: Colors.white,
                           ),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
+                        SizedBox(
+                          width: 20,
+                        ),
                         InkWell(
                           onTap: () {
                             _speak(feed.title);

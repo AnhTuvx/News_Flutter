@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:news_app_flutter/widget/Vietlott_KQXS_page.dart';
+import 'package:news_app_flutter/widget/utilities_widget.dart';
 
 class TienIchPage extends StatefulWidget {
   const TienIchPage({super.key});
@@ -35,10 +35,11 @@ class _TienIchPageState extends State<TienIchPage> {
                 color: Colors.white,
               ),
             ),
-            SizedBox(height: 16.0),
             // ListLogoPage(),
             SizedBox(height: 8.0),
-            VietlottWidget(),
+            Expanded(
+              child: VietlottWidget(),
+            )
           ],
         ),
       ),
