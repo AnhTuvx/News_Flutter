@@ -373,8 +373,8 @@ class _RssFeedPageState extends State<RssFeedPage> {
                         ),
                         InkWell(
                           onTap: () {
-                            bookmarkProvider
-                                .toggleBookmark(feed); // Thêm hoặc xóa bookmark
+                            bookmarkProvider.toggleBookmark(
+                                feed, context); // Thêm hoặc xóa bookmark
                           },
                           child: Icon(
                             isBookmarked

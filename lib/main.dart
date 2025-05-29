@@ -27,31 +27,31 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false, // Tắt banner debug
-      home: AuthWrapper(), // Điều hướng dựa trên trạng thái người dùng
+      home: HomePage(), // Điều hướng dựa trên trạng thái người dùng
     );
   }
 }
 
 // AuthWrapper để xử lý luồng điều hướng
-class AuthWrapper extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(),
-      builder: (context, snapshot) {
-        // Kiểm tra trạng thái người dùng
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Scaffold(
-            body: Center(
-                child:
-                    CircularProgressIndicator()), // Hiển thị khi chờ Firebase
-          );
-        } else if (snapshot.hasData && snapshot.data != null) {
-          return HomePage(); // Chuyển đến trang chính nếu người dùng đã đăng nhập
-        } else {
-          return LoginScreen(); // Chuyển đến màn hình đăng nhập nếu chưa đăng nhập
-        }
-      },
-    );
-  }
-}
+// class AuthWrapper extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return StreamBuilder<User?>(
+//       stream: FirebaseAuth.instance.authStateChanges(),
+//       builder: (context, snapshot) {
+//         // Kiểm tra trạng thái người dùng
+//         if (snapshot.connectionState == ConnectionState.waiting) {
+//           return Scaffold(
+//             body: Center(
+//                 child:
+//                     CircularProgressIndicator()), // Hiển thị khi chờ Firebase
+//           );
+//         } else if (snapshot.hasData && snapshot.data != null) {
+//           return HomePage(); // Chuyển đến trang chính nếu người dùng đã đăng nhập
+//         } else {
+//           return LoginScreen(); // Chuyển đến màn hình đăng nhập nếu chưa đăng nhập
+//         }
+//       },
+//     );
+//   }
+// }

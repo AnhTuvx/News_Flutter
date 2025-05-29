@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../widget/UI_widget/snackbar.dart';
 
@@ -13,6 +14,12 @@ class ForgotPassword extends StatefulWidget {
 class _ForgotPasswordState extends State<ForgotPassword> {
   TextEditingController emailController = TextEditingController();
   final auth = FirebaseAuth.instance;
+
+  bool isValidEmail(String email) {
+    return RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+        .hasMatch(email);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -86,24 +93,22 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     style:
                         ElevatedButton.styleFrom(backgroundColor: Colors.blue),
                     onPressed: () async {
-                      await auth
-                          .sendPasswordResetEmail(email: emailController.text)
-                          .then((value) {
-                        // if success then show this message
+                      if (isValidEmail(emailController.text)) {
+                        await auth
+                            .sendPasswordResetEmail(email: emailController.text)
+                            .then((value) {
+                          showSnackBar(context,
+                              "Chúng tôi đã gửi cho bạn liên kết đặt lại mật khẩu tới email của bạn, vui lòng kiểm tra");
+                        }).onError((error, stackTrace) {
+                          showSnackBar(context, error.toString());
+                        });
+                        Navigator.pop(context);
+                        emailController.clear();
+                      } else {
                         showSnackBar(context,
-                            "Chúng tôi đã gửi cho bạn liên kết đặt lại mật khẩu tới email của bạn, vui lòng kiểm tra");
-                      }).onError((error, stackTrace) {
-                        // if unsuccess then show error message
-                        showSnackBar(context, error.toString());
-                      });
-                      // terminate the dialog after send the forgot password link
-                      Navigator.pop(context);
-                      // clear the text field
-                      emailController.clear();
+                            "Định dạng email không hợp lệ, vui lòng kiểm tra lại");
+                      }
                     },
-
-                    // if we remember the password then we can easily login
-                    // if we forget the password then we apply this method
                     child: const Text(
                       "Gửi",
                       style: TextStyle(

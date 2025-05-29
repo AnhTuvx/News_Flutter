@@ -49,7 +49,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Lỗi: $e"),
+          content: Text("Vui lòng đăng nhập lại để có thể thay đổi mật khẩu !"),
         ),
       );
     }

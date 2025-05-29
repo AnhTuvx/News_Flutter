@@ -13,10 +13,9 @@ class VietlottWidget extends StatelessWidget {
             children: [
               _buildSection(
                 context,
-                title: "Thời tiết Khánh Hòa",
-                imagePath: 'lib/img/weatherKhanhHoa.png',
-                url:
-                    'https://www.accuweather.com/vi/vn/nha-trang/354222/weather-forecast/354222',
+                title: "Thời tiết Việt Nam",
+                imagePath: 'lib/img/Thoitiet.jpg',
+                url: 'https://www.accuweather.com/vi/vn/vietnam-weather',
               ),
               _buildSection(
                 context,

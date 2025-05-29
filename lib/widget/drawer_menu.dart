@@ -17,7 +17,7 @@ class DrawerMenuWidget extends StatelessWidget {
           const Padding(
             padding: const EdgeInsets.only(left: 16, top: 16, right: 16),
             child: Text(
-              'Quản lí tin yêu thích',
+              'Quản lý nguồn tin',
               style: TextStyle(
                 fontSize: 30,
                 fontWeight: FontWeight.bold,

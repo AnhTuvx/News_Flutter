@@ -1,27 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../view/login_page.dart';
 
-Future<void> signOut(BuildContext context) async {
+Future<void> signOut(BuildContext context, VoidCallback refreshData) async {
   showDialog(
     context: context,
     builder: (context) {
       return AlertDialog(
-        backgroundColor: Colors.black, // Nền màu đen
+        backgroundColor: Colors.black,
         title: Text(
           "Xác nhận đăng xuất",
-          style:
-              TextStyle(color: Colors.white, fontSize: 18), // Tiêu đề màu trắng
+          style: TextStyle(color: Colors.white, fontSize: 18),
         ),
         content: Text(
           "Bạn có chắc chắn muốn đăng xuất không?",
-          style: TextStyle(
-              color: Colors.white, fontSize: 16), // Nội dung màu trắng
+          style: TextStyle(color: Colors.white, fontSize: 16),
         ),
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context); // Đóng hộp thoại nếu chọn "Hủy"
+              Navigator.pop(context);
             },
             child: Text(
               "Hủy",
@@ -30,8 +27,8 @@ Future<void> signOut(BuildContext context) async {
           ),
           TextButton(
             onPressed: () async {
-              Navigator.pop(context); // Đóng hộp thoại sau khi xác nhận
-              await _performSignOut(context); // Gọi hàm đăng xuất
+              Navigator.pop(context);
+              await _performSignOut(context, refreshData);
             },
             child: Text(
               "Đăng xuất",
@@ -44,9 +41,11 @@ Future<void> signOut(BuildContext context) async {
   );
 }
 
-Future<void> _performSignOut(BuildContext context) async {
+Future<void> _performSignOut(
+    BuildContext context, VoidCallback refreshData) async {
   try {
     await FirebaseAuth.instance.signOut(); // Thực hiện đăng xuất
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -56,12 +55,9 @@ Future<void> _performSignOut(BuildContext context) async {
         backgroundColor: Colors.green,
       ),
     );
-    // Điều hướng về màn hình đăng nhập và xoá toàn bộ stack navigation
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => LoginScreen()),
-      (route) => false,
-    );
+
+    // Gọi hàm làm mới dữ liệu
+    refreshData();
   } catch (e) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

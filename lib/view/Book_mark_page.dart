@@ -102,8 +102,8 @@ class _BookMarkPageState extends State<BookMarkPage> {
                                   size: 30,
                                 ),
                                 onPressed: () {
-                                  bookmarkProvider
-                                      .toggleBookmark(feed); // Xóa bookmark
+                                  bookmarkProvider.toggleBookmark(
+                                      feed, context); // Xóa bookmark
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                       content: Text('Tin đã được xóa!'),

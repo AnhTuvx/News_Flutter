@@ -28,21 +28,30 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   void signupUser() async {
-    // set is loading to true.
+    // Kiểm tra định dạng email
+    if (!RegExp(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
+        .hasMatch(emailController.text)) {
+      showSnackBar(context, "Email không hợp lệ. Vui lòng nhập lại!");
+      return;
+    }
+
+    // Set isLoading thành true
     setState(() {
       isLoading = true;
     });
-    // signup user using our authmethod
+
+    // Đăng ký người dùng bằng phương thức xác thực
     String res = await AuthMethod().signupUser(
-        email: emailController.text,
-        password: passwordController.text,
-        name: nameController.text);
-    // if string return is success, user has been creaded and navigate to next screen other witse show error.
+      email: emailController.text,
+      password: passwordController.text,
+      name: nameController.text,
+    );
+
+    // Kiểm tra kết quả đăng ký
     if (res == "success") {
       setState(() {
         isLoading = false;
       });
-      //navigate to the next screen
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) => HomePage(),
@@ -52,7 +61,6 @@ class _SignupScreenState extends State<SignupScreen> {
       setState(() {
         isLoading = false;
       });
-      // show error
       showSnackBar(context, res);
     }
   }

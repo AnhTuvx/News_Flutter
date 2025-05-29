@@ -14,6 +14,7 @@ class CategoryProvider with ChangeNotifier {
     CategoryModel(id: "phap_luat", name: "Pháp luật"),
     CategoryModel(id: "giai_tri", name: "Giải trí"),
     CategoryModel(id: "the_thao", name: "Thể thao"),
+    CategoryModel(id: "du_lich", name: "Du lịch"),
   ];
   List<bool> changeState = [];
   // List of selected category IDs
@@ -25,7 +26,8 @@ class CategoryProvider with ChangeNotifier {
     "doi_song",
     "the_thao",
     "phap_luat",
-    "giai_tri"
+    "giai_tri",
+    "du_lich,"
   ];
   List<String> stateDomain = [];
   // Constructor: Load selected categories when the provider is initialized

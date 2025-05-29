@@ -3,8 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:news_app_flutter/view/Book_mark_page.dart';
 import 'package:news_app_flutter/view/login_page.dart';
+import 'package:news_app_flutter/widget/Bookmark_widget/BookmarkProvider.dart';
 import 'package:news_app_flutter/widget/Person_widget/Change_password.dart';
 import 'package:news_app_flutter/widget/Person_widget/Log_out.dart';
+import 'package:provider/provider.dart';
 
 import '../widget/Person_widget/Remove_acc.dart';
 
@@ -14,8 +16,8 @@ class UserProfilePage extends StatefulWidget {
 }
 
 class _UserProfilePageState extends State<UserProfilePage> {
-  String name = "Loading..."; // Giá trị mặc định ban đầu
-  String email = "Loading..."; // Giá trị mặc định ban đầu
+  String name = "Người dùng"; // Giá trị mặc định ban đầu
+  String email = "Chưa đăng nhập"; // Giá trị mặc định ban đầu
 
   @override
   void initState() {
@@ -24,13 +26,13 @@ class _UserProfilePageState extends State<UserProfilePage> {
   }
 
   Future<void> loadUserInfo() async {
-    User? user =
+    User? users =
         FirebaseAuth.instance.currentUser; // Lấy thông tin người dùng hiện tại
-    if (user != null) {
+    if (users != null) {
       // Đọc tài liệu từ Firestore theo UID người dùng
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
           .collection('users')
-          .doc(user.uid)
+          .doc(users.uid)
           .get();
       if (userDoc.exists) {
         // Kiểm tra nếu tài liệu tồn tại và cập nhật name và email
@@ -63,35 +65,43 @@ class _UserProfilePageState extends State<UserProfilePage> {
     }
   }
 
-  Future<void> _deleteAccount() async {
+  Future<void> _deleteAccount(BuildContext context) async {
     try {
       User? user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        // Xóa tài khoản từ Firebase Authentication
-        await user.delete();
 
-        // Xóa dữ liệu người dùng từ Firestore (nếu có)
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .delete();
-
+      // Kiểm tra nếu người dùng chưa đăng nhập
+      if (user == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Tài khoản đã được xóa thành công."),
-            backgroundColor: Colors.green,
+            content: Text("Bạn cần đăng nhập trước khi xóa tài khoản."),
+            backgroundColor: Colors.orange,
           ),
         );
-
-        // Điều hướng về trang đăng nhập
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => LoginScreen()),
-          (route) => false,
-        );
-      } else {
-        print("No user is signed in.");
+        return;
       }
+
+      // Xóa tài khoản từ Firebase Authentication
+      await user.delete();
+
+      // Xóa dữ liệu người dùng từ Firestore (nếu có)
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .delete();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Tài khoản đã được xóa thành công."),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      // Điều hướng về trang đăng nhập
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => LoginScreen()),
+        (route) => false,
+      );
     } catch (e) {
       if (e.toString().contains("requires-recent-login")) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -208,7 +218,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
             TextButton(
               onPressed: () async {
                 Navigator.pop(context); // Đóng hộp thoại sau khi xác nhận
-                await _deleteAccount(); // Gọi hàm xóa tài khoản
+                await _deleteAccount(context); // Gọi hàm xóa tài khoản
               },
               child: Text(
                 "Xóa",
@@ -223,6 +233,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    User? user = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: Padding(
@@ -236,15 +248,14 @@ class _UserProfilePageState extends State<UserProfilePage> {
               children: [
                 const CircleAvatar(
                   radius: 40,
-                  backgroundImage: AssetImage(
-                      'lib/img/Learning-cuate.png'), // Đường dẫn ảnh trong thư mục assets
+                  backgroundImage: AssetImage('lib/img/Learning-cuate.png'),
                 ),
                 SizedBox(width: 16),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      name, // Hiển thị name từ Firestore
+                      name, // Hiển thị tên nếu có
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 24,
@@ -253,7 +264,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      email, // Hiển thị email từ Firestore
+                      email, // Hiển thị email hoặc báo chưa đăng nhập
                       style: TextStyle(color: Colors.grey[400], fontSize: 18),
                     ),
                   ],
@@ -262,13 +273,38 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 IconButton(
                   icon: Icon(Icons.edit, color: Colors.white),
                   onPressed: () {
-                    _showEditNameDialog(); // Gọi hộp thoại chỉnh sửa tên
+                    if (user != null) {
+                      _showEditNameDialog();
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content:
+                                Text("Bạn cần đăng nhập để chỉnh sửa tên")),
+                      );
+                    }
                   },
                 ),
               ],
             ),
             SizedBox(height: 20),
-            // Menu Options
+
+            // Nếu chưa đăng nhập, hiển thị nút đăng nhập
+            user == null
+                ? buildMenuItem(
+                    icon: Icons.person,
+                    text: "Đăng nhập",
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                      );
+                    },
+                  )
+                : Text(
+                    "Bạn đã đăng nhập",
+                    style: TextStyle(color: Colors.green, fontSize: 20),
+                  ),
+
             buildMenuItem(
               icon: Icons.add_to_photos_outlined,
               text: "Danh sách tin đọc sau",
@@ -279,31 +315,53 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 );
               },
             ),
+
+            // Kiểm tra nếu đã đăng nhập trước khi thay đổi mật khẩu
             buildMenuItem(
               icon: Icons.lock,
               text: "Thay đổi mật khẩu",
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ChangePasswordPage()),
-                );
+                if (user != null) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ChangePasswordPage()),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content:
+                            Text("Bạn cần đăng nhập để thay đổi mật khẩu")),
+                  );
+                }
               },
             ),
+
+            // Kiểm tra nếu đã đăng nhập trước khi xóa tài khoản
             buildMenuItem(
               icon: Icons.delete,
               text: "Xóa tài khoản",
               onTap: () {
-                _showDeleteConfirmationDialog(
-                    context); // Hiển thị hộp thoại xác nhận
+                if (user != null) {
+                  _showDeleteConfirmationDialog(context);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text("Bạn cần đăng nhập để xóa tài khoản")),
+                  );
+                }
               },
             ),
 
             buildMenuItem(
               icon: Icons.logout_outlined,
               text: "Đăng xuất",
-              onTap: () => signOut(context),
+              onTap: () => signOut(context, () {
+                // Gọi hàm làm mới dữ liệu sau khi đăng xuất
+                Provider.of<BookmarkProvider>(context, listen: false)
+                    .loadBookmarks();
+              }),
             ),
-            // Face ID / Touch ID with Toggle
           ],
         ),
       ),

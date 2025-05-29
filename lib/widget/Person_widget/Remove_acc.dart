@@ -72,7 +72,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            "Lỗi: $e",
+            "Vui lòng đăng nhập lại để có thể xóa tài khoản !",
             style: TextStyle(color: Colors.white),
           ),
           backgroundColor: Colors.red,

@@ -11,11 +11,16 @@ class BookmarkProvider with ChangeNotifier {
   List<RssFeed> get bookmarkedFeeds => _bookmarkedFeeds;
 
   BookmarkProvider() {
-    loadBookmarks(); // Tải dữ liệu từ Firestore khi khởi tạo Provider
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      loadBookmarks(); // Tự động tải dữ liệu khi đăng nhập mới
+    });
   }
 
   Future<void> loadBookmarks() async {
     User? user = _auth.currentUser;
+
+    _bookmarkedFeeds.clear(); // Xóa danh sách cũ trước khi tải mới
+
     if (user != null) {
       DocumentSnapshot userDoc =
           await _firestore.collection('users').doc(user.uid).get();
@@ -23,26 +28,32 @@ class BookmarkProvider with ChangeNotifier {
         List<Map<String, dynamic>> saveFeed =
             List<Map<String, dynamic>>.from(userDoc['saveFeed']);
         _bookmarkedFeeds = saveFeed.map((map) => RssFeed.fromMap(map)).toList();
-        notifyListeners(); // Thông báo UI cập nhật
+        notifyListeners();
       }
     }
   }
 
-  Future<void> toggleBookmark(RssFeed feed) async {
+  Future<void> toggleBookmark(RssFeed feed, BuildContext context) async {
     User? user = _auth.currentUser;
-    if (user != null) {
-      if (_bookmarkedFeeds.any((element) => element.link == feed.link)) {
-        _bookmarkedFeeds.removeWhere((element) => element.link == feed.link);
-      } else {
-        _bookmarkedFeeds.add(feed);
-      }
 
-      await _firestore.collection('users').doc(user.uid).update({
-        'saveFeed': _bookmarkedFeeds.map((feed) => feed.toMap()).toList(),
-      });
-
-      notifyListeners();
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Vui lòng đăng nhập để lưu tin yêu thích')),
+      );
+      return;
     }
+
+    if (_bookmarkedFeeds.any((element) => element.link == feed.link)) {
+      _bookmarkedFeeds.removeWhere((element) => element.link == feed.link);
+    } else {
+      _bookmarkedFeeds.add(feed);
+    }
+
+    await _firestore.collection('users').doc(user.uid).update({
+      'saveFeed': _bookmarkedFeeds.map((feed) => feed.toMap()).toList(),
+    });
+
+    notifyListeners();
   }
 
   bool isBookmarked(String link) {
