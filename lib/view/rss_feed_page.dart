@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:news_app_flutter/model/category_model.dart';
 import 'package:news_app_flutter/model/rss_feed_model.dart';
+import 'package:news_app_flutter/services/firestore_service.dart';
 import 'package:news_app_flutter/services/sort.dart';
 import 'package:news_app_flutter/services/Rss_Home_Service.dart';
 import 'package:news_app_flutter/view/detail_page.dart';
@@ -10,6 +12,7 @@ import 'package:news_app_flutter/widget/CategoryProvider.dart';
 import 'package:news_app_flutter/widget/drawer_menu.dart';
 import 'package:provider/provider.dart';
 
+import '../get_categories.dart';
 import '../widget/Bookmark_widget/BookmarkProvider.dart';
 
 class RssFeedPage extends StatefulWidget {
@@ -23,23 +26,34 @@ class _RssFeedPageState extends State<RssFeedPage> {
   int indexSelected = 0;
   Timer? _timer;
   List<List<RssFeed>> cachedFeeds = [];
-
+  bool isLoading =true;
   @override
   void initState() {
     super.initState();
-    _loadInitialData();
-    _startTimer();
+    WidgetsBinding.instance.addPostFrameCallback((_)async {
+      _loadInitialData();
+      _startTimer();
+    });
+
   }
 
-  void _loadInitialData() {
+  void _loadInitialData() async{
     CategoryProvider categoryProvider =
         Provider.of<CategoryProvider>(context, listen: false);
+    setState(() {
+      isLoading = true;
+    });
+    categoryProvider.selectedCategories = await FirebaseService().getCategories();
+    await FirebaseService().getRssFeed();
     futureFeeds = RssService()
         .fetchRssFeeds(categoryProvider.selectedCategories[indexSelected]);
     cachedFeeds = List.generate(
       categoryProvider.selectedCategories.length,
       (_) => [],
     );
+    setState(() {
+      isLoading = false;
+    });
   }
 
   void _startTimer() {
@@ -180,6 +194,9 @@ class _RssFeedPageState extends State<RssFeedPage> {
 
   @override
   Widget build(BuildContext context) {
+    if(isLoading){
+      return const Center(child: CircularProgressIndicator(),);
+    }
     return Consumer<CategoryProvider>(
       builder: (context, categoryProvider, child) {
         futureFeeds = RssService().fetchRssFeeds(

@@ -9,10 +9,9 @@ class RssService {
       {List<String> urlsFilter = const []}) async {
     final urls = getUrls(category, urlFilter: urlsFilter);
     List<RssFeed> feeds = [];
-
     for (var url in urls) {
       final response = await http.get(Uri.parse(url));
-
+      print(response);
       if (response.statusCode == 200) {
         try {
           final document = xml.XmlDocument.parse(response.body);
