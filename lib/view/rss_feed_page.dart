@@ -45,6 +45,7 @@ class _RssFeedPageState extends State<RssFeedPage> {
     });
     categoryProvider.selectedCategories = await FirebaseService().getCategories();
     await FirebaseService().getRssFeed();
+    categoryProvider.loadSelectedCategories();
     futureFeeds = RssService()
         .fetchRssFeeds(categoryProvider.selectedCategories[indexSelected]);
     cachedFeeds = List.generate(

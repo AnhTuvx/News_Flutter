@@ -21,12 +21,11 @@ class CategoryProvider with ChangeNotifier {
   List<String> selectedCategories = [];
   List<String> stateDomain = [];
   // Constructor: Load selected categories when the provider is initialized
-  CategoryProvider() {
-    _loadSelectedCategories();
-  }
+  // CategoryProvider() {
+  // }
 
   // Load selected categories from SharedPreferences
-  void _loadSelectedCategories() async {
+  void loadSelectedCategories() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     // Retrieve saved selected categories or default to all categories
     selectedCategories = prefs.getStringList('selectedCategories') ??
